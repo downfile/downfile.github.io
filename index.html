@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Download single file from GitHub</title>
+  <meta name="author" content="Jakub Bouček">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous" async></script>
+</head>
+<style>
+	header, footer {
+		margin: 3em auto;
+	}
+	footer, footer a {
+		color: #888;
+		font-size: 0.9rem;
+		text-align: center;
+	}
+</style>
+  <script>
+  window.addEventListener('DOMContentLoaded', async function() {
+    const url = new URL(document.location);
+    const fileUrl = url.searchParams.get("url");
+    if(fileUrl === null) {
+      return;
+    }
+
+    const input = document.querySelector('input');
+    input.value = fileUrl;
+    input.disabled = false;
+
+    const a = document.querySelector('a');
+    a.text = `Downloading…`;
+
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    console.log(objectUrl);
+
+    let fileName = url.searchParams.get("file");
+    if(fileName === null) {
+    	const fileUrlUrl = new URL(fileUrl);
+    	fileName = fileUrlUrl.pathname.replace(/^.*[\\\/]/, '');
+    }
+    a.href=objectUrl;
+    a.download = fileName;
+    a.text = `Download ${fileName}`;
+    a.classList.remove('disabled');
+
+    const download = url.searchParams.get("download");
+    if(download == 1) {
+    	a.click();
+    }
+  });
+  </script>
+
+<body>
+	<div class="container">
+		<header>
+	  		<h1>Download file from Github</h1>
+		</header>
+		<main>
+			<p>Now is downloading file:</p>
+			<div class="mb-3">
+			<input type="text" readonly disabled value="loading…" class="form-control">
+		</div>
+			<div class="mb-3">
+			<a class="btn btn-success btn-lg btn-block disabled" role="button">Loading…</a>
+		</div>
+		</main>
+		<footer>
+			Jakub Bouček, <a href="https://github.com/downfile/downfile.github.io">about Down file</a>
+		</footer>
+	</div>
+</body>
+</html>
